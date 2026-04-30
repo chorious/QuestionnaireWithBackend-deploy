@@ -104,6 +104,8 @@ func handleSubmit(c *gin.Context) {
 		return
 	}
 
+	fmt.Printf("[submit] result=%s id=%s time=%d\n", req.Result, id, createdAt)
+
 	c.JSON(http.StatusOK, gin.H{"success": true, "id": id})
 }
 

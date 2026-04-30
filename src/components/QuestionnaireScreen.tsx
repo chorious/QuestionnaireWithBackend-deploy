@@ -30,12 +30,16 @@ export const QuestionnaireScreen: React.FC<QuestionnaireScreenProps> = ({
     updatedResponses.push(newResponse);
     setResponses(updatedResponses);
 
+    // Lock immediately on final question to prevent double-submit
+    if (currentQuestion === questions.length - 1) {
+      isCompletedRef.current = true;
+    }
+
     // Auto-advance to next question
     setTimeout(() => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
-        isCompletedRef.current = true;
         onComplete(updatedResponses);
       }
     }, 500);
