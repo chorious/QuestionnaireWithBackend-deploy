@@ -27,7 +27,10 @@ interface SubmissionPayload {
 function apiUrl(path: string): string {
   const base = getApiBase();
   if (!base) throw new Error('API base not configured');
-  return `${base.replace(/\/$/, '')}${path}`;
+  const normalized = base.replace(/\/$/, '');
+  // Auto-append /api if base doesn't already end with it
+  const apiBase = normalized.endsWith('/api') ? normalized : `${normalized}/api`;
+  return `${apiBase}${path}`;
 }
 
 export async function submitSubmission(payload: SubmissionPayload): Promise<{ success: boolean; id: string }> {
