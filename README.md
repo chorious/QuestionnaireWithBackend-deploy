@@ -17,6 +17,7 @@ Based on Edgar Schein's Career Anchor theory: 8 core drives that shape career ch
 - **Statistics**: Total count and per-type distribution
 - **Version Check**: Frontend polls backend version every 30s; prompts refresh on mismatch
 - **Duplicate Protection**: Prevents double-submit on the final question
+- **Required Contact Info**: Name (Chinese, ≤10 chars) and phone (digits, ≤16) required before starting
 
 ---
 
@@ -110,12 +111,15 @@ Request body:
   "scores": {"TF": 2, "GM": 2, "AU": 1, "SE": 1, "EC": 1, "SV": 1, "CH": 1, "LS": 1},
   "result": "TF+GM",
   "source": "",
-  "user_id": "550e8400-e29b-41d4-a716-446655440000"
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "张三",
+  "phone": "13800138000"
 }
 ```
 
 - `user_id` is optional. If provided, it is stored as-is. If omitted, the server generates one.
 - The frontend persists `user_id` in localStorage so the same user always submits the same ID.
+- `name` and `phone` are collected on the welcome screen. Name must be Chinese characters (≤10). Phone must be digits (≤16).
 
 Response:
 ```json
@@ -142,6 +146,8 @@ Response:
     {
       "id": "...",
       "user_id": "...",
+      "name": "张三",
+      "phone": "13800138000",
       "answers": "[\"3\",\"5\",\"1\"]",
       "scores": "{\"TF\":3,\"GM\":2}",
       "result": "TF+GM",
@@ -156,7 +162,7 @@ Response:
 
 **Protected.** Requires `X-Admin-Token` header.
 
-Returns a CSV file with BOM for Excel compatibility.
+Returns a CSV file with BOM for Excel compatibility. Columns: `id`, `user_id`, `name`, `phone`, `result`, `created_at`, `source`, `answers`, `scores`.
 
 ### GET /api/stats
 
