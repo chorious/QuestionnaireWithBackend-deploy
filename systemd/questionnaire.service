@@ -1,0 +1,17 @@
+[Unit]
+Description=Questionnaire Backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/questionnaire
+ExecStart=/opt/questionnaire/questionnaire-backend
+Restart=on-failure
+RestartSec=5
+Environment="PORT=3000"
+Environment="ADMIN_TOKEN=your-secret-token"
+Environment="DB_PATH=/opt/questionnaire/data/data.db"
+
+[Install]
+WantedBy=multi-user.target

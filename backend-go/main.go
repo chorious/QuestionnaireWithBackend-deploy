@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"regexp"
@@ -15,6 +17,9 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+//go:embed dist
+var distFS embed.FS
+
 var db *sql.DB
 var adminToken string
 
@@ -24,7 +29,12 @@ func init() {
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlite", "data.db")
+	dbPath := getenv("DB_PATH", "./data/data.db")
+	if err := os.MkdirAll("./data", 0755); err != nil {
+		fmt.Println("create data dir failed:", err)
+		os.Exit(1)
+	}
+	db, err = sql.Open("sqlite", dbPath)
 	if err != nil {
 		fmt.Println("open db failed:", err)
 		os.Exit(1)
@@ -49,9 +59,22 @@ func main() {
 		admin.GET("/stats", handleStats)
 	}
 
-	// SPA fallback: serve dist/index.html for non-API routes
+	// Serve embedded static files
+	staticFS, err := fs.Sub(distFS, "dist")
+	if err != nil {
+		fmt.Println("static fs failed:", err)
+		os.Exit(1)
+	}
+	r.StaticFS("/", http.FS(staticFS))
+
+	// SPA fallback
 	r.NoRoute(func(c *gin.Context) {
-		c.File("../dist/index.html")
+		data, err := distFS.ReadFile("dist/index.html")
+		if err != nil {
+			c.String(http.StatusNotFound, "index.html not found")
+			return
+		}
+		c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 	})
 
 	port := getenv("PORT", "3000")
