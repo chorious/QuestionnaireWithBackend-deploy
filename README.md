@@ -1,16 +1,17 @@
 # QuestionnaireWithBackend
 
-An online questionnaire and personality test system with full-stack capabilities. Answer questions, get scored results, and submit data to a persistent backend.
+An online career anchor assessment system with full-stack capabilities. Answer 10 questions, get your dominant career anchor(s), and submit data to a persistent backend.
 
-Forked from [Spandan-Bhattarai/Personality-Traits-Tester](https://github.com/Spandan-Bhattarai/Personality-Traits-Tester) (React + TypeScript + Tailwind CSS frontend). Added a Go backend with SQLite for data collection and export.
+Based on Edgar Schein's Career Anchor theory: 8 core drives that shape career choices. Forked from [Spandan-Bhattarai/Personality-Traits-Tester](https://github.com/Spandan-Bhattarai/Personality-Traits-Tester) (React + TypeScript + Tailwind CSS frontend). Replaced the MBTI model with a Career Anchor model and added a Go backend with SQLite for data collection and export.
 
 ---
 
 ## Features
 
-- **Questionnaire Flow**: Step-by-step questions with auto-advance and progress bar
-- **Auto Scoring**: Calculates dimension scores and determines result type
-- **Result Page**: Type name, description, key traits, strengths, and dimension breakdown
+- **Questionnaire Flow**: 10-step questions with auto-advance and progress bar
+- **Auto Scoring**: Counts A-H selections, determines dominant career anchor(s)
+- **Result Page**: Anchor name, description, key traits, career suggestions, and score distribution across all 8 anchors
+- **Dual Anchor Support**: If two anchors tie for highest count, both are displayed (e.g. "TF+SV")
 - **Data Persistence**: Every submission saved to SQLite with UUIDs
 - **CSV Export**: Download all submissions as CSV
 - **Statistics**: Total count and per-type distribution
@@ -105,9 +106,9 @@ Response:
 Request body:
 ```json
 {
-  "answers": ["3", "5", "1", "4", "2", "3", "5", "1"],
-  "scores": {"EI": 3, "SN": -1, "TF": 2, "JP": -2},
-  "result": "INTJ",
+  "answers": ["A", "B", "C", "D", "E", "F", "G", "H", "A", "B"],
+  "scores": {"TF": 2, "GM": 2, "AU": 1, "SE": 1, "EC": 1, "SV": 1, "CH": 1, "LS": 1},
+  "result": "TF+GM",
   "source": "",
   "user_id": "550e8400-e29b-41d4-a716-446655440000"
 }
@@ -142,8 +143,8 @@ Response:
       "id": "...",
       "user_id": "...",
       "answers": "[\"3\",\"5\",\"1\"]",
-      "scores": "{\"EI\":3}",
-      "result": "INTJ",
+      "scores": "{\"TF\":3,\"GM\":2}",
+      "result": "TF+GM",
       "created_at": 1777567977647,
       "source": ""
     }
@@ -166,9 +167,9 @@ Response:
 {
   "total": 5,
   "byResult": [
-    {"result": "ISTJ", "count": 3},
-    {"result": "INTJ", "count": 1},
-    {"result": "A", "count": 1}
+    {"result": "TF", "count": 3},
+    {"result": "GM", "count": 2},
+    {"result": "TF+SV", "count": 1}
   ]
 }
 ```
@@ -219,7 +220,7 @@ QuestionnaireWithBackend/
 
 ## Roadmap / TODO
 
-- [ ] Replace MBTI 32-question model with custom 10-question A-H scoring
+- [x] Replace MBTI 32-question model with Career Anchor 10-question A-H scoring
 - [ ] Add result share image generation (Canvas / html2canvas)
 - [ ] Add nickname and optional fields to submission
 - [ ] Deploy to production (cloud server or VPS)
